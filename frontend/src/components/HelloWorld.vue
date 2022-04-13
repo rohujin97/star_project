@@ -2,9 +2,9 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h3>1...100</h3>
-    <input type="radio" name="pattern" value="1" v-model="pattern">1 (easy)
-    <input type="radio" name="pattern" value="2" v-model="pattern">2 (middle)
-    <input type="radio" name="pattern" value="3" v-model="pattern">3 (hard)
+    <input type="radio" name="pattern" value="1" v-model="pattern" :disabled="count == 1">1 (easy)
+    <input type="radio" name="pattern" value="2" v-model="pattern" :disabled="count == 1">2 (middle)
+    <input type="radio" name="pattern" value="3" v-model="pattern" :disabled="count == 1">3 (hard)
     <br>
     <br>
     <input type="number" v-model="number" @change="makeTree" :disabled="count == 1" placeholder="1..100">
