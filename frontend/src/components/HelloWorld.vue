@@ -7,7 +7,7 @@
     <input type="radio" name="pattern" value="3" v-model="pattern">3 (hard)
     <br>
     <br>
-    <input type="number" v-model="number" @change="makeTree" placeholder="1..100">
+    <input type="number" v-model="number" @change="makeTree" :disabled="count == 1" placeholder="1..100">
     <div class="star" :style="alignChange">
       <p v-for="star in stars" :key="star.id">
         {{ star }}
@@ -37,13 +37,13 @@ export default class HelloWorld extends Vue {
   }
 
   makeTree() {
-    if (this.count >= 1) {
-      window.alert('오늘의 트리는 종료되었습니다.');
+    if (this.number < 1 || this.number > 100) {
+      window.alert('1부터 100사이 숫자로 다시 적으시오');
       return;
     }
 
-    if (this.number < 1 || this.number > 100) {
-      window.alert('1부터 100사이 숫자로 다시 적으시오');
+    if (!Number.isInteger(this.number)) {
+      window.alert('정수로 다시 적으시오');
       return;
     }
 
@@ -54,8 +54,9 @@ export default class HelloWorld extends Vue {
         this.stars[i] = '*'.repeat(i+1);
       }
     } else if (this.pattern == 2) {
-      for (let i = this.number; i >= 0; i--) {
-        this.stars[i] = '*'.repeat(i);
+      let j = this.number;
+      for (let i = 0; i < this.number; i++, j--) {
+        this.stars[i] = '*'.repeat(j);
       }
       this.alignChange = {
         'text-align': 'right',
