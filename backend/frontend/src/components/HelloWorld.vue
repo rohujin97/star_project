@@ -59,6 +59,10 @@ export default class HelloWorld extends Vue {
         'margin-right': '50%'
       }
     } else if (this.pattern == 3) {
+      if (Number.isInteger(this.number/2)) {
+        window.alert('홀수로 다시 적으시오');
+        return;
+      }
       this.alignChange = {
         'text-align': 'center'
       }
