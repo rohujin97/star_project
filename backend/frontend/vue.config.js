@@ -1,10 +1,10 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-  outputDir: "../src/main/resources/static",
-    indexPath: "../static/index.html",
+  outputDir: "../../src/main/resources/static",
+    indexPath: "../../static/index.html",
     devServer: {
-      proxy: "http://localhost:8090"
+      proxy: "http://localhost:8081"
     },
     chainWebpack: config => {
       const svgRule = config.module.rule("svg");

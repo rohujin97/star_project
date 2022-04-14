@@ -1,61 +1,87 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-typescript" target="_blank" rel="noopener">typescript</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h3>1...100</h3>
+    <input type="radio" name="pattern" value="1" v-model="pattern">Step 1
+    <input type="radio" name="pattern" value="2" v-model="pattern">Step 2
+    <input type="radio" name="pattern" value="3" v-model="pattern">Step 3
+    <input type="radio" name="pattern" value="4" v-model="pattern">Step 4
+    <input type="radio" name="pattern" value="5" v-model="pattern">Step 5
+    <br>
+    <br>
+    <input type="number" v-model="number" @change="makeTree" placeholder="1..100">
+    <div class="star" :style="alignChange">
+      <p v-for="star in stars" :key="star.id">
+        {{ star }}
+      </p>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import axios from "axios";
 
 @Options({
   props: {
-    msg: String
+    msg: String,
   }
 })
+
 export default class HelloWorld extends Vue {
-  msg!: string
+
+  stars:string[] = [];
+  number:number = 0;
+  pattern:number = 1;
+  alignChange:object = {
+    'text-align': 'left',
+    'margin-left': '50%'
+  }
+  params:object = {
+    pattern: this.pattern,
+    number: this.number
+  }
+
+  makeTree() {
+    if (this.number < 1 || this.number > 100) {
+      window.alert('1부터 100사이 숫자로 다시 적으시오');
+      return;
+    }
+
+    if (!Number.isInteger(this.number)) {
+      window.alert('정수로 다시 적으시오');
+      return;
+    }
+
+    if (this.pattern == 2) {
+      this.alignChange = {
+        'text-align': 'right',
+        'margin-right': '50%'
+      }
+    } else if (this.pattern == 3) {
+      this.alignChange = {
+        'text-align': 'center'
+      }
+    }
+
+    this.stars = [];
+    let url = "/pattern/tree/" + this.pattern + "/" + this.number
+    this.params = {
+      pattern: this.pattern,
+      number: this.number
+    }
+
+    axios.get(url)
+    .then((res) => {
+      console.log(res.data);
+      this.stars = res.data;
+    })
+  }
+
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+
 </style>
