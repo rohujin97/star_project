@@ -9,7 +9,7 @@
     <input type="radio" name="pattern" value="5" v-model="pattern">Step 5
     <br>
     <br>
-    <input type="number" v-model="number" @change="makeTree" placeholder="1..100">
+    <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
     <div class="star" :style="alignChange">
       <p v-for="star in stars" :key="star.id">
         {{ star }}
@@ -31,7 +31,7 @@ import axios from "axios";
 export default class HelloWorld extends Vue {
 
   stars:string[] = [];
-  number:number = 0;
+  height:number = 0;
   pattern:number = 1;
   alignChange:object = {
     'text-align': 'left',
@@ -39,16 +39,16 @@ export default class HelloWorld extends Vue {
   }
   params:object = {
     pattern: this.pattern,
-    number: this.number
+    height: this.height
   }
 
   makeTree() {
-    if (this.number < 1 || this.number > 100) {
+    if (this.height < 1 || this.height > 100) {
       window.alert('1부터 100사이 숫자로 다시 적으시오');
       return;
     }
 
-    if (!Number.isInteger(this.number)) {
+    if (!Number.isInteger(this.height)) {
       window.alert('정수로 다시 적으시오');
       return;
     }
@@ -59,7 +59,7 @@ export default class HelloWorld extends Vue {
         'margin-right': '50%'
       }
     } else if (this.pattern == 3) {
-      if (Number.isInteger(this.number/2)) {
+      if (Number.isInteger(this.height/2)) {
         window.alert('홀수로 다시 적으시오');
         return;
       }
@@ -69,16 +69,19 @@ export default class HelloWorld extends Vue {
     }
 
     this.stars = [];
-    let url = "/pattern/tree/" + this.pattern + "/" + this.number
+    let url = "/pattern/tree/" + this.pattern + "/" + this.height
     this.params = {
       pattern: this.pattern,
-      number: this.number
+      height: this.height
     }
 
     axios.get(url)
-    .then((res) => {
-      console.log(res.data);
-      this.stars = res.data;
+        .then((res) => {
+          console.log(res.data);
+          this.stars = res.data;
+        }).catch(err => {
+          window.alert("서버에 문제가 발생했습니다.");
+          console.log(err.response);
     })
   }
 

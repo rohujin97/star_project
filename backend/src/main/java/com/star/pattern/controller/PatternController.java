@@ -14,9 +14,9 @@ public class PatternController {
     @Autowired
     private PatternService patternService;
 
-    @GetMapping("/tree/{pattern}/{number}")
-    public List<String> getPatternResult(@PathVariable("pattern") Integer pattern, @PathVariable("number") Integer number) {
+    @GetMapping("/tree/{pattern}/{height}")
+    public List<String> getPatternResult(@PathVariable("pattern") Integer pattern, @PathVariable("height") Integer height) {
 
-        return patternService.getPatternTree(pattern, number);
+        return patternService.getPatternTree(pattern, height);
     }
 }
