@@ -66,6 +66,11 @@ export default class HelloWorld extends Vue {
       this.alignChange = {
         'text-align': 'center'
       }
+    } else {
+      this.alignChange = {
+        'text-align': 'left',
+        'margin-left': '50%'
+      }
     }
 
     this.stars = [];
