@@ -22,15 +22,15 @@ public class PatternService {
             }
         } else if (pattern == 2) {
             for (int i = height; i > 0; i--) {
-                tree.add(star.repeat(i));
+                tree.add(blank.repeat(height-i) + star.repeat(i));
             }
         } else if (pattern == 3) {
             int half = Math.round(height/2)+1;
             for (int i = 1; i < half; i++) {
-                tree.add(star.repeat(i));
+                tree.add(blank.repeat(half-i) + star.repeat(i));
             }
             for (int i = half; i > 0; i--) {
-                tree.add(star.repeat(i));
+                tree.add(blank.repeat(half-i) + star.repeat(i));
             }
         } else if (pattern == 4) {
             for (int i = height-1; i >= 0; i--) {
