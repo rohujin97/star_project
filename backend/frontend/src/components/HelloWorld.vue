@@ -1,26 +1,29 @@
 <template>
   <div class="hello">
     <h1>{{ msg }} (1..100)</h1>
-    <h2>최대 10번까지!</h2>
-    <input type="radio" name="pattern" value="1" v-model="pattern" :disabled="count > 10">Step 1
-    <input type="radio" name="pattern" value="2" v-model="pattern" :disabled="count > 10">Step 2
-    <input type="radio" name="pattern" value="3" v-model="pattern" :disabled="count > 10">Step 3
-    <input type="radio" name="pattern" value="4" v-model="pattern" :disabled="count > 10">Step 4
-    <input type="radio" name="pattern" value="5" v-model="pattern" :disabled="count > 10">Step 5
+    <input type="radio" name="pattern" value="1" v-model="pattern">Step 1
+    <input type="radio" name="pattern" value="2" v-model="pattern">Step 2
+    <input type="radio" name="pattern" value="3" v-model="pattern">Step 3
+    <input type="radio" name="pattern" value="4" v-model="pattern">Step 4
+    <input type="radio" name="pattern" value="5" v-model="pattern">Step 5
     <br>
     <br>
-    <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100" :disabled="count > 10">
+    <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
     <div>
-      <div class="history" style="float: left">
-        <strong style="color: green">History(과거순)</strong>
-        <div v-for="history in histories" :key="history.id" :style="alignChange">
-          <p v-for="item in history" :key="item.id" :style="this.styles">
-            {{ item }}
-          </p>
-          <hr>
+      <div class="history" style="float: left; width:50%">
+        <strong style="color:green">History</strong>
+        <div v-for="(history, idx) in historiesNotCurrent" :key="history.id" >
+            <strong style="color: green" @click="isShow = !isShow">{{ idx + 1 }}</strong>
+            <transition name="slide">
+              <div class="child" v-if="isShow">
+                <p v-for="item in history" :key="item.id" :style="this.styles">
+                  {{ item }}
+                </p>
+              </div>
+            </transition>
         </div>
       </div>
-      <div class="star" :style="alignChange">
+      <div class="star" style="float: left;">
         <strong style="color:red">Current Choice</strong>
         <p v-for="star in stars" :key="star.id">
           {{ star }}
@@ -46,16 +49,14 @@ export default class HelloWorld extends Vue {
   height:number = 0;
   pattern:number = 1;
   count:number = 1;
-  alignChange:object = {
-    'text-align': 'left',
-    'margin-left': '50%',
-    'float': 'left'
-  }
   params:object = {
     pattern: this.pattern,
     height: this.height
   }
+  isShow:boolean = false
   histories:string[][] = []
+  historiesNotCurrent:string[][] = []
+  last:string[][] = []
 
   makeTree() {
     if (this.height < 1 || this.height > 100) {
@@ -88,6 +89,15 @@ export default class HelloWorld extends Vue {
         .then((res) => {
           this.stars = res.data;
           this.histories.push(this.stars);
+          if (this.histories.length > 11) {
+            this.histories.shift();
+          } else if (this.histories.length == 1) {
+            return;
+          }
+          this.historiesNotCurrent = this.histories.slice();
+          this.historiesNotCurrent = this.historiesNotCurrent.splice(0, this.historiesNotCurrent.length-1)
+          console.log(this.histories)
+          console.log(this.historiesNotCurrent)
         }).catch(err => {
           window.alert("서버에 문제가 발생했습니다.");
           console.log(err.response);
