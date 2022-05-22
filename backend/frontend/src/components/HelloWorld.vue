@@ -9,8 +9,8 @@
     <br>
     <br>
     <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
-    <div>
-      <div class="history" style="float: left; width:50%">
+    <div style="overflow: auto;">
+      <div class="history" style="float: left; width:50%;">
         <strong style="color:green">History</strong>
         <div v-for="(history, idx) in historiesNotCurrent" :key="history.id" >
             <strong style="color: green" @click="isShow = !isShow">{{ idx + 1 }}</strong>
@@ -23,7 +23,7 @@
             </transition>
         </div>
       </div>
-      <div class="star" style="float: left;">
+      <div class="star" style="float: left; width:45%;">
         <strong style="color:red">Current Choice</strong>
         <p v-for="star in stars" :key="star.id">
           {{ star }}
