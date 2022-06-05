@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }} (1..100)</h1>
+    <h1> How many Star? (1..100)</h1>
     <input type="radio" name="pattern" value="1" v-model="pattern">Step 1
     <input type="radio" name="pattern" value="2" v-model="pattern">Step 2
     <input type="radio" name="pattern" value="3" v-model="pattern">Step 3
@@ -11,19 +11,22 @@
     <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
     <div style="overflow: auto;">
       <div class="history" style="float: left; width:50%;">
+        <input type="checkbox" @click="allShow()"> <strong>All UP/DOWN</strong>
+        <br/>
         <strong style="color:green">History</strong>
-        <div v-for="(history, idx) in historiesNotCurrent" :key="history.id" >
-            <strong style="color: green" @click="isShow = !isShow">{{ idx + 1 }}</strong>
-            <transition name="slide">
-              <div class="child" v-if="isShow">
-                <p v-for="item in history" :key="item.id" :style="this.styles">
-                  {{ item }}
-                </p>
-              </div>
-            </transition>
+        <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id">
+          <strong style="color: green" @click="clickShow(idx)">{{ idx + 1 }}</strong>
+          <transition name="slide">
+            <div class="child" v-if="historiesNotCurrent.isShowing[idx]">
+              <p v-for="item in history" :key="item.id" :style="this.styles">
+                {{ item }}
+              </p>
+            </div>
+          </transition>
         </div>
       </div>
       <div class="star" style="float: left; width:45%;">
+        <br/>
         <strong style="color:red">Current Choice</strong>
         <p v-for="star in stars" :key="star.id">
           {{ star }}
@@ -34,14 +37,8 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
+import { Vue } from 'vue-class-component';
 import axios from "axios";
-
-@Options({
-  props: {
-    msg: String,
-  }
-})
 
 export default class HelloWorld extends Vue {
 
@@ -53,12 +50,15 @@ export default class HelloWorld extends Vue {
     pattern: this.pattern,
     height: this.height
   }
-  isShow:boolean = false
   histories:string[][] = []
-  historiesNotCurrent:string[][] = []
-  last:string[][] = []
+  last:string[][] = [];
+  historiesNotCurrent: {hist: string[][], isShowing: boolean[]} = {
+    hist: [],
+    isShowing: []
+  }
+  isShow: boolean = false
 
-  makeTree() {
+    makeTree() {
     if (this.height < 1 || this.height > 100) {
       window.alert('1부터 100사이 숫자로 다시 적으시오');
       return;
@@ -94,14 +94,25 @@ export default class HelloWorld extends Vue {
           } else if (this.histories.length == 1) {
             return;
           }
-          this.historiesNotCurrent = this.histories.slice();
-          this.historiesNotCurrent = this.historiesNotCurrent.splice(0, this.historiesNotCurrent.length-1)
-          console.log(this.histories)
           console.log(this.historiesNotCurrent)
+          this.historiesNotCurrent.hist = this.histories.slice();
+          this.historiesNotCurrent.hist = this.historiesNotCurrent.hist.splice(0, this.historiesNotCurrent.hist.length-1)
+          this.historiesNotCurrent.isShowing.push(false);
         }).catch(err => {
           window.alert("서버에 문제가 발생했습니다.");
           console.log(err.response);
     })
+  }
+
+  clickShow(i: number) {
+    this.historiesNotCurrent.isShowing[i] = !this.historiesNotCurrent.isShowing[i];
+  }
+
+  allShow() {
+    this.isShow = !this.isShow;
+    for (let i = 0; i < 10; i++) {
+      this.historiesNotCurrent.isShowing[i] = this.isShow;
+    }
   }
 
 }
