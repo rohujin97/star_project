@@ -138,11 +138,13 @@ export default class HelloWorld extends Vue {
         text.innerText = "별 접기";
         starList.style.maxHeight = "100%";
       }
+      this.fold = true;
       window.scrollTo(0, document.body.scrollHeight);
     } else {
       if (text?.innerText && starList?.style.maxHeight) {
         text.innerText = "별 더보기";
         starList.style.maxHeight = "400px";
+        this.fold = false;
       }
     }
   }
