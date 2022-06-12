@@ -62,6 +62,7 @@ export default class HelloWorld extends Vue {
     isShowing: []
   }
   isShow: boolean = false
+  fold: boolean = false
 
   makeTree() {
     if (this.height < 1 || this.height > 100) {
@@ -94,14 +95,21 @@ export default class HelloWorld extends Vue {
         .then((res) => {
           this.stars = res.data;
           this.histories.push(this.stars);
+          const button = document.getElementById("btn-moreInfo");
+          let sty;
 
-          if (this.stars.length > 10) {
-            const button = document.getElementById("btn-moreInfo");
-            const sty = button ? button.style : null;
-
-            sty?.setProperty('display', 'block');
+          if (button?.style) {
+            sty = button.style;
           }
 
+          // 길이 > 10 일때 버튼 생성
+          if (this.stars.length > 10) {
+            sty?.setProperty('display', 'block');
+          } else {
+            sty?.setProperty('display', 'none');
+          }
+
+          // history 최대 10개
           if (this.histories.length > 11) {
             this.histories.shift();
           } else if (this.histories.length == 1) {
@@ -123,14 +131,19 @@ export default class HelloWorld extends Vue {
     // eslint-disable-next-line no-undef
     const starList = document.getElementById("starList");
     const button = document.getElementById("btn-moreInfo");
-    let text = button ? button : null;
-    if (text?.innerText == "별 더보기") {
-      text.innerText = "별 접기";
-      starList ? starList.style.maxHeight = "100%" : null;
+    let text = button ?? null;
+
+    if (!this.fold) {
+      if (text?.innerText && starList?.style.maxHeight) {
+        text.innerText = "별 접기";
+        starList.style.maxHeight = "100%";
+      }
       window.scrollTo(0, document.body.scrollHeight);
-    } else if (text?.innerText == "별 접기") {
-      text.innerText = "별 더보기";
-      starList ? starList.style.maxHeight = "400px" : null;
+    } else {
+      if (text?.innerText && starList?.style.maxHeight) {
+        text.innerText = "별 더보기";
+        starList.style.maxHeight = "400px";
+      }
     }
   }
 
@@ -170,9 +183,6 @@ export default class HelloWorld extends Vue {
 
   border: none;
   border-radius: 4px;
-
-  display: inline-block;
-  width: auto;
 
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
