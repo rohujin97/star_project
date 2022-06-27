@@ -12,37 +12,38 @@
     <br>
     <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
     <div style="overflow: auto;">
-      <div class="history" style="float: left; width:50%;">
+      <div class="history">
         <input type="checkbox" @click="allShow()"> <strong>All UP/DOWN</strong>
         <br/>
         <strong style="color:green">History</strong>
-        <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id">
-          <strong class="a" @click="clickShow(idx)">{{ idx + 1 }}</strong>
+        <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id" ref="parentList">
+          <strong @click="clickShow(idx)">{{ idx + 1 }}</strong>
+          <button class="btn-moreHistoryInfo" ref="historyInfo" @click="moreHistoryInfo(idx)">별 더보기</button>
           <transition name="slide">
-            <div v-if="historiesNotCurrent.isShowing[idx]">
-              <p v-for="item in history" :key="item.id" :style="this.styles">
+            <div class="historyList" v-if="historiesNotCurrent.isShowing[idx]" ref="historyList">
+              <p v-for="item in history" ref="hList" :key="item.id">
                 {{ item }}
               </p>
             </div>
           </transition>
         </div>
       </div>
-      <div class="star" style="float: left; width:45%;">
+      <div class="star">
         <br/>
         <strong style="color:red">Current Choice</strong>
-        <div id="starList">
-          <p v-for="star in stars" :key="star.id">
+        <button id="btn-moreInfo" ref="starInfo" @click="moreInfo">별 더보기</button>
+        <div id="starList" ref="starList">
+          <p v-for="star in stars" class="pList" ref="pList" :key="star.id">
             {{ star }}
           </p>
         </div>
-        <button id="btn-moreInfo" @click="moreInfo">별 더보기</button>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {Vue} from 'vue-class-component';
+import { Vue } from 'vue-class-component';
 import axios from "axios";
 
 export default class HelloWorld extends Vue {
@@ -57,12 +58,14 @@ export default class HelloWorld extends Vue {
   }
   histories: string[][] = []
   last: string[][] = [];
-  historiesNotCurrent: { hist: string[][], isShowing: boolean[] } = {
+  historiesNotCurrent: { hist: string[][], isShowing: boolean[], pattern: number[] } = {
     hist: [],
-    isShowing: []
+    isShowing: [],
+    pattern: []
   }
   isShow: boolean = false
   fold: boolean = false
+  foldList: string[] = [];
 
   makeTree() {
     if (this.height < 1 || this.height > 100) {
@@ -95,18 +98,13 @@ export default class HelloWorld extends Vue {
         .then((res) => {
           this.stars = res.data;
           this.histories.push(this.stars);
-          const button = document.getElementById("btn-moreInfo");
-          let sty;
-
-          if (button?.style) {
-            sty = button.style;
-          }
+          let button: any = this.$refs.starInfo;
 
           // 길이 > 10 일때 버튼 생성
           if (this.stars.length > 10) {
-            sty?.setProperty('display', 'block');
+            button.style.display = 'block';
           } else {
-            sty?.setProperty('display', 'none');
+            button.style.display = 'none';
           }
 
           // history 최대 10개
@@ -119,45 +117,89 @@ export default class HelloWorld extends Vue {
           this.historiesNotCurrent.hist = this.histories.slice();
           this.historiesNotCurrent.hist = this.historiesNotCurrent.hist.splice(0, this.historiesNotCurrent.hist.length - 1)
           this.historiesNotCurrent.isShowing.push(false);
-
+          this.historiesNotCurrent.pattern.push(this.pattern);
+          this.foldList.push('none');
         })
         .catch(err => {
           window.alert("서버에 문제가 발생했습니다.");
           console.log(err.response);
         })
+    .then(() => {
+      if (this.pattern == 1 || this.pattern == 6) {
+        let pList: any = this.$refs.pList;
+        for (let pListKey in pList) {
+          pList[pListKey].style.width = "fit-content";
+        }
+      }
+    })
   }
 
   moreInfo() {
-    // eslint-disable-next-line no-undef
-    const starList = document.getElementById("starList");
-    const button = document.getElementById("btn-moreInfo");
-    let text = button ?? null;
+    let list: any = this.$refs.starList;
+    let button: any = this.$refs.starInfo;
 
     if (!this.fold) {
-      if (text?.innerText && starList?.style.maxHeight) {
-        text.innerText = "별 접기";
-        starList.style.maxHeight = "100%";
-      }
+      button.innerText = "별 접기";
+      list.style.maxHeight = "100%";
       this.fold = true;
-      window.scrollTo(0, document.body.scrollHeight);
     } else {
-      if (text?.innerText && starList?.style.maxHeight) {
-        text.innerText = "별 더보기";
-        starList.style.maxHeight = "400px";
-        this.fold = false;
-      }
+      button.innerText = "별 더보기";
+      list.style.maxHeight = "400px";
+      this.fold = false;
+    }
+  }
+
+  moreHistoryInfo(i: number) {
+    let list: any = this.$refs.parentList;
+    let button: any = this.$refs.historyInfo;
+
+    console.log(this.foldList[i]);
+    if (this.foldList[i] == 'none') {
+      button[i].innerText = "별 접기";
+      list[i].children[2].style.maxHeight = "100%";
+      this.foldList[i] = 'block';
+    } else {
+      button[i].innerText = "별 더보기";
+      list[i].children[2].style.maxHeight = "400px";
+      this.foldList[i] = 'none';
     }
   }
 
   clickShow(i: number) {
     this.historiesNotCurrent.isShowing[i] = !this.historiesNotCurrent.isShowing[i];
+    let button: any = this.$refs.historyInfo;
+
+    if (this.historiesNotCurrent.isShowing[i] == true) {
+      // 길이 > 10 일때 버튼 생성
+      if (this.historiesNotCurrent.hist[i].length > 10) {
+        button[i].style.display = 'block';
+      } else {
+        button[i].style.display = 'none';
+      }
+    } else {
+      button[i].style.display = 'none';
+    }
+
+    setTimeout(() => {
+      console.log(this.historiesNotCurrent.pattern[i]);
+      let pattern = this.historiesNotCurrent.pattern[i];
+      if (pattern == 1 || pattern == 6) {
+        let hList: any = this.$refs.hList;
+        for (let hListKey in hList) {
+          hList[hListKey].style.width = "fit-content";
+        }
+      }
+
+    },10);
   }
+
 
   allShow() {
     this.isShow = !this.isShow;
     for (let i = 0; i < 10; i++) {
       this.historiesNotCurrent.isShowing[i] = this.isShow;
     }
+
   }
 
 }
@@ -165,7 +207,7 @@ export default class HelloWorld extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#btn-moreInfo {
+#btn-moreInfo, .btn-moreHistoryInfo {
   display: none;
   width: 100px;
   margin: auto;
@@ -193,8 +235,26 @@ export default class HelloWorld extends Vue {
   transition: 0.5s;
 }
 
-#starList {
+.btn-moreHistoryInfo {
+  background-color: mediumseagreen;
+}
+
+#starList, .historyList {
   max-height: 400px;
   overflow: hidden;
+  margin: 0;
 }
+
+.history {
+  position: absolute;
+  left: 25%;
+  top: 30%;
+}
+
+.star {
+  position: absolute;
+  left: 65%;
+  top: 30%;
+}
+
 </style>
