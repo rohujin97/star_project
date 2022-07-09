@@ -11,14 +11,13 @@
     <br>
     <br>
     <input type="number" v-model="height" @keyup.enter="makeTree" placeholder="1..100">
-    <div style="overflow: auto;">
+    <div class="all">
       <div class="history">
         <input type="checkbox" @click="allShow()"> <strong>All UP/DOWN</strong>
         <br/>
         <strong style="color:green">History</strong>
         <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id" ref="parentList">
           <strong @click="clickShow(idx)">{{ idx + 1 }}</strong>
-          <button class="btn-moreHistoryInfo" ref="historyInfo" @click="moreHistoryInfo(idx)">별 더보기</button>
           <transition name="slide">
             <div class="historyList" v-if="historiesNotCurrent.isShowing[idx]" ref="historyList">
               <p v-for="item in history" ref="hList" :key="item.id">
@@ -32,7 +31,7 @@
         <br/>
         <strong style="color:red">Current Choice</strong>
         <button id="btn-moreInfo" ref="starInfo" @click="moreInfo">별 더보기</button>
-        <div id="starList" ref="starList">
+        <div class="starList" ref="starList">
           <p v-for="star in stars" class="pList" ref="pList" :key="star.id">
             {{ star }}
           </p>
@@ -124,44 +123,31 @@ export default class HelloWorld extends Vue {
           window.alert("서버에 문제가 발생했습니다.");
           console.log(err.response);
         })
-    .then(() => {
-      if (this.pattern == 1 || this.pattern == 6) {
-        let pList: any = this.$refs.pList;
-        for (let pListKey in pList) {
-          pList[pListKey].style.width = "fit-content";
-        }
-      }
-    })
+        .then(() => {
+          if (this.pattern == 1 || this.pattern == 6) {
+            let pList: any = this.$refs.pList;
+            for (let pListKey in pList) {
+              pList[pListKey].style.width = "fit-content";
+            }
+          }
+        })
   }
 
   moreInfo() {
     let list: any = this.$refs.starList;
     let button: any = this.$refs.starInfo;
+    let starList: any = this.$refs.starList;
 
     if (!this.fold) {
       button.innerText = "별 접기";
       list.style.maxHeight = "100%";
+      starList.style.overflowX = "auto";
       this.fold = true;
     } else {
       button.innerText = "별 더보기";
       list.style.maxHeight = "400px";
+      starList.style.overflowX = "hidden";
       this.fold = false;
-    }
-  }
-
-  moreHistoryInfo(i: number) {
-    let list: any = this.$refs.parentList;
-    let button: any = this.$refs.historyInfo;
-
-    console.log(this.foldList[i]);
-    if (this.foldList[i] == 'none') {
-      button[i].innerText = "별 접기";
-      list[i].children[2].style.maxHeight = "100%";
-      this.foldList[i] = 'block';
-    } else {
-      button[i].innerText = "별 더보기";
-      list[i].children[2].style.maxHeight = "400px";
-      this.foldList[i] = 'none';
     }
   }
 
@@ -173,6 +159,7 @@ export default class HelloWorld extends Vue {
       // 길이 > 10 일때 버튼 생성
       if (this.historiesNotCurrent.hist[i].length > 10) {
         button[i].style.display = 'block';
+
       } else {
         button[i].style.display = 'none';
       }
@@ -181,7 +168,6 @@ export default class HelloWorld extends Vue {
     }
 
     setTimeout(() => {
-      console.log(this.historiesNotCurrent.pattern[i]);
       let pattern = this.historiesNotCurrent.pattern[i];
       if (pattern == 1 || pattern == 6) {
         let hList: any = this.$refs.hList;
@@ -205,9 +191,8 @@ export default class HelloWorld extends Vue {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#btn-moreInfo, .btn-moreHistoryInfo {
+#btn-moreInfo {
   display: none;
   width: 100px;
   margin: auto;
@@ -235,26 +220,36 @@ export default class HelloWorld extends Vue {
   transition: 0.5s;
 }
 
-.btn-moreHistoryInfo {
-  background-color: mediumseagreen;
-}
-
-#starList, .historyList {
+.historyList {
   max-height: 400px;
-  overflow: hidden;
+  overflow: auto;
   margin: 0;
 }
 
+.starList {
+  max-height: 400px;
+  overflow: hidden;
+}
+
 .history {
-  position: absolute;
-  left: 25%;
-  top: 30%;
+  background-color: lightgreen;
+  margin: 10px 0 0 20%;
+  float: left;
+  width: 400px;
+  overflow-x: auto;
 }
 
 .star {
-  position: absolute;
-  left: 65%;
-  top: 30%;
+  background-color: #F68080;
+  width: 400px;
+  margin: 10px 0 0 25px;
+  float: left;
+  overflow-x: auto;
+}
+
+.all {
+  white-space: nowrap;
+  overflow: auto;
 }
 
 </style>
