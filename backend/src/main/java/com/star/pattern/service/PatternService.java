@@ -26,12 +26,11 @@ public class PatternService {
                 tree.add(blank.repeat(height-i) + star.repeat(i));
             }
         } else if (pattern == 3) {
-            int half = Math.round(height/2)+1;
-            for (int i = 1; i < half; i++) {
-                tree.add(blank.repeat(half-i) + star.repeat(i) + blank.repeat(half-i));
-            }
-            for (int i = half; i > 0; i--) {
-                tree.add(blank.repeat(half-i) + star.repeat(i) + blank.repeat(half-i));
+            int half = (int) Math.floor(height/2);
+            for (int i = 0; i < height; i++) {
+                int v1 = Math.abs(half - i);
+                int v2 = half - v1;
+                tree.add(blank.repeat(v1) + star.repeat(v2 * 2 + 1) + blank.repeat(v1));
             }
         } else if (pattern == 4) {
             for (int i = height-1; i >= 0; i--) {

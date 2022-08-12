@@ -17,9 +17,10 @@
         <br/>
         <strong style="color:green">History</strong>
         <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id" ref="parentList">
-          <strong @click="clickShow(idx)">{{ idx + 1 }}</strong>
+          <p style="font-weight: bold" @click="clickShow(idx)">{{ idx + 1 }}</p>
           <transition name="slide">
-            <div class="historyList" v-if="historiesNotCurrent.isShowing[idx]" ref="historyList">
+            <div v-bind:class="{historyList2: historiesNotCurrent.pattern[idx] == 2, historyList: historiesNotCurrent.pattern[idx] != 2}"
+                 v-if="historiesNotCurrent.isShowing[idx]" ref="historyList">
               <p v-for="item in history" ref="hList" :key="item.id">
                 {{ item }}
               </p>
@@ -77,11 +78,17 @@ export default class HelloWorld extends Vue {
       return;
     }
 
+    let starList: any = this.$refs.starList;
+
+    starList.style.textAlign = '';
+
     if (this.pattern == 3) {
       if (Number.isInteger(this.height / 2)) {
         window.alert('홀수로 다시 적으시오');
         return;
       }
+    } else if (this.pattern == 2) {
+      starList.style.textAlign = 'right';
     }
 
     this.stars = [];
@@ -224,24 +231,32 @@ export default class HelloWorld extends Vue {
   max-height: 400px;
   overflow: auto;
   margin: 0;
+  display: inline-block;
+}
+
+.historyList2 {
+  text-align: right;
+  display: inline-block;
 }
 
 .starList {
   max-height: 400px;
   overflow: hidden;
+  display: inline-block;
 }
 
 .history {
   background-color: lightgreen;
   margin: 10px 0 0 20%;
   float: left;
-  width: 400px;
+  width: 500px;
   overflow-x: auto;
+  /*display: inline-block;*/
 }
 
 .star {
   background-color: #F68080;
-  width: 400px;
+  width: 500px;
   margin: 10px 0 0 25px;
   float: left;
   overflow-x: auto;
