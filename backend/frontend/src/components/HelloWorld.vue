@@ -15,9 +15,9 @@
       <div class="history">
         <input type="checkbox" @click="allShow()"> <strong>All UP/DOWN</strong>
         <br/>
-        <strong style="color:green">History</strong>
+        <p class="subTitle" style="color:green">History</p>
         <div v-for="(history, idx) in historiesNotCurrent.hist" :key="history.id" ref="parentList">
-          <p style="font-weight: bold" @click="clickShow(idx)">{{ idx + 1 }}</p>
+          <p class="subTitle" @click="clickShow(idx)">{{ idx + 1 }}</p>
           <transition name="slide">
             <div v-bind:class="{historyList2: historiesNotCurrent.pattern[idx] == 2, historyList: historiesNotCurrent.pattern[idx] != 2}"
                  v-if="historiesNotCurrent.isShowing[idx]" ref="historyList">
@@ -30,7 +30,7 @@
       </div>
       <div class="star">
         <br/>
-        <strong style="color:red">Current Choice</strong>
+        <p class="subTitle" style="color: red">Current Choice</p>
         <button id="btn-moreInfo" ref="starInfo" @click="moreInfo">별 더보기</button>
         <div class="starList" ref="starList">
           <p v-for="star in stars" class="pList" ref="pList" :key="star.id">
@@ -267,4 +267,7 @@ export default class HelloWorld extends Vue {
   overflow: auto;
 }
 
+.subTitle {
+  font-weight: bold
+}
 </style>
