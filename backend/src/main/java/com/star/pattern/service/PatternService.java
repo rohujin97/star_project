@@ -1,7 +1,7 @@
 package com.star.pattern.service;
 
-import com.star.pattern.domain.PatternVO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.star.pattern.domain.Pattern;
+import com.star.pattern.domain.PatternRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,11 +10,12 @@ import java.util.List;
 @Service
 public class PatternService {
 
-    public List<String> getPatternTree(int pattern, int height) {
+    public Pattern getPatternTree(long pattern, int height) {
 
+        PatternRepository patternRepository = PatternRepository.getInstance();
         List<String> tree = new ArrayList<>();
-        String star = "*";
-        String blank = "\u00A0";
+        String star = "\uD83D\uDC7B";
+        String blank = "\u00A0".repeat(4);
         int width;
 
         if (pattern == 1) {
@@ -50,6 +51,8 @@ public class PatternService {
             }
         }
 
-        return tree;
+        Pattern patternVO = new Pattern(pattern, tree);
+
+        return patternRepository.save(patternVO);
     }
 }

@@ -1,11 +1,9 @@
 package com.star.pattern.controller;
 
-import com.star.pattern.domain.PatternVO;
+import com.star.pattern.domain.Pattern;
 import com.star.pattern.service.PatternService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/pattern")
@@ -15,7 +13,7 @@ public class PatternController {
     private PatternService patternService;
 
     @GetMapping("/tree/{pattern}/{height}")
-    public List<String> getPatternResult(@PathVariable("pattern") Integer pattern, @PathVariable("height") Integer height) {
+    public Pattern getPatternResult(@PathVariable("pattern") Long pattern, @PathVariable("height") Integer height) {
 
         return patternService.getPatternTree(pattern, height);
     }
